@@ -7,10 +7,16 @@ export async function login(req, res) {
         const user = await authService.login(username, password)
         const loginToken = authService.getLoginToken(user)
         
-        logger.info('User login: ', user)
+        const miniUser = {
+            _id: user._id,
+            fullname: user.fullname,
+            isAdmin: user.isAdmin
+        }
+
+        logger.info('User login: ', miniUser)
         res.cookie('loginToken', loginToken)
 
-        res.json(user)
+        res.json(miniUser)
     } catch (err) {
         logger.error('Failed to Login ' + err)
         res.status(401).send({ err: 'Failed to Login' })
