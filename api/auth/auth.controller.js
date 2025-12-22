@@ -7,10 +7,12 @@ export async function login(req, res) {
         const user = await authService.login(username, password)
         const loginToken = authService.getLoginToken(user)
         
+        console.log('isadmin: ',user.isAdmin)
+        
         const miniUser = {
             _id: user._id,
             fullname: user.fullname,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin || false
         }
 
         logger.info('User login: ', miniUser)
