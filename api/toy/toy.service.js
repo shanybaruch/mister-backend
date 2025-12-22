@@ -43,7 +43,7 @@ async function query(filterBy = { txt: '' }) {
 			sort[filterBy.sortBy] = direction
 		}
 		const pageIdx = +filterBy.pageIdx || 0
-		const PAGE_SIZE = 8
+		const PAGE_SIZE = 6
 
 		var toys = await collection.find(criteria)
 			.sort(sort)
