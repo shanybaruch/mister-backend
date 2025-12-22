@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb'
 import { dbService } from '../../services/db.service.js'
 import { logger } from '../../services/logger.service.js'
 import { utilService } from '../../services/util.service.js'
+import { log } from 'console'
 
 export const toyService = {
 	remove,
@@ -12,24 +13,48 @@ export const toyService = {
 	update,
 	addToyMsg,
 	removeToyMsg,
+	getLabels
 }
 
 async function query(filterBy = { txt: '' }) {
 	try {
-		const { filterCriteria, sortCriteria, skip } = _buildCriteria(filterBy)
+		const criteria = {
+			name: { $regex: filterBy.txt, $options: 'i' },
+		}
+		if (filterBy.maxPrice) {
+			criteria.price = { $lte: +filterBy.maxPrice }
+		}
+
+		if (filterBy.inStock && filterBy.inStock !== 'all') {
+			criteria.inStock = filterBy.inStock === 'true'
+		}
+
+		if (filterBy.labels && filterBy.labels.length > 0) {
+			criteria.labels = { $in: filterBy.labels }
+		}
 
 		const collection = await dbService.getCollection('toy')
-		const totalCount = await collection.countDocuments(filterCriteria)
 
-		const filteredToys =
-			await collection
-				.find(filterCriteria)
-				.sort(sortCriteria)
-				.skip(skip)
-				.limit(PAGE_SIZE).toArray()
+		const labels = await collection.distinct('labels')
+		const totalCount = await collection.countDocuments(criteria)
+		const sort = {}
+		if (filterBy.sortBy) {
+			const direction = +filterBy.desc || 1
+			sort[filterBy.sortBy] = direction
+		}
+		const pageIdx = +filterBy.pageIdx || 0
+		const PAGE_SIZE = 8
+
+		var toys = await collection.find(criteria)
+			.sort(sort)
+			.skip(pageIdx * PAGE_SIZE)
+			.limit(PAGE_SIZE)
+			.toArray()
 
 		const maxPage = Math.ceil(totalCount / PAGE_SIZE)
-		return { toys: filteredToys, maxPage }
+
+		console.log('toys: ', toys)
+		return { toys, maxPage, totalCount, labels }
 	} catch (err) {
 		logger.error('cannot find toys', err)
 		throw err
@@ -118,26 +143,11 @@ async function removeToyMsg(toyId, msgId) {
 	}
 }
 
-function _buildCriteria(filterBy) {
-	const filterCriteria = {}
+async function getLabels() {
+	const collection = await dbService.getCollection('toy')
+	const toys = await collection.find({}).toArray()
 
-	if (filterBy.txt) {
-		filterCriteria.name = { $regex: filterBy.txt, $options: 'i' }
-	}
-	if (filterBy.inStock) {
-		filterCriteria.inStock = JSON.parse(filterBy.inStock)
-	}
-	if (filterBy.labels && filterBy.labels.length) {
-		filterCriteria.labels = { $in: filterBy.labels }
-	}
-	const sortCriteria = {}
-	const sortBy = filterBy.sortBy
-
-	if (sortBy.type) {
-		const sortDirection = +sortBy.sortDir
-		sortCriteria[sortBy.type] = sortDirection
-	} else sortCriteria.createdAt = -1
-
-	const skip = filterBy.pageIdx !== undefined ? filterBy.pageIdx * PAGE_SIZE : 0
-	return { filterCriteria, sortCriteria, skip }
+	const labels = toys.flatMap(toy => toy.labels || [])
+	return [...new Set(labels)]
 }
+

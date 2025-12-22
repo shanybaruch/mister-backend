@@ -13,10 +13,13 @@ export async function getToys(req, res) {
         sortBy: req.query.sortBy,
         desc: req.query.desc,
         inStock: req.query.inStock,
-        labels
+        labels: labels || []
     }
     try {
         const toyData = await toyService.query(filterBy)
+        console.log('filter by: ', filterBy);
+        console.log('toy data: ', toyData);
+        
         res.json(toyData)
     } catch (err) {
         logger.error('Cannot get toys', err)
@@ -96,4 +99,9 @@ export async function removeToyMsg(req, res) {
         logger.error('Failed to remove toy msg', err)
         res.status(500).send({ err: 'Failed to remove toy msg' })
     }
+}
+
+export async function getToyLabels(req, res) {
+    const labels = await toyService.getLabels()
+    res.json(labels)
 }
