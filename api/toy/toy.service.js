@@ -36,7 +36,7 @@ async function query(filterBy = { txt: '' }) {
 		const collection = await dbService.getCollection('toy')
 
 		const labels = await getLabels()
-		console.log('--- DEBUG: Labels being sent:', labels)
+		// console.log('--- DEBUG: Labels being sent:', labels)
 		const totalCount = await collection.countDocuments(criteria)
 		const sort = {}
 		if (filterBy.sortBy) {
