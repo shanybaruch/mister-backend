@@ -35,7 +35,8 @@ async function query(filterBy = { txt: '' }) {
 
 		const collection = await dbService.getCollection('toy')
 
-		const labels = await collection.distinct('labels')
+		const labels = await getLabels()
+		console.log('--- DEBUG: Labels being sent:', labels)
 		const totalCount = await collection.countDocuments(criteria)
 		const sort = {}
 		if (filterBy.sortBy) {
@@ -88,6 +89,8 @@ async function add(toy) {
 	try {
 		toy.createdAt = Date.now()
 		toy.inStock = true
+		console.log('labels- in backend: ', toy.labels);
+
 		if (!toy.labels) toy.labels = []
 		const uniqueStr = toy.name || toy._id || 'default-toy'
 		toy.imgUrl = toy.imgUrl || `https://robohash.org/${uniqueStr}?set=set4`
@@ -144,10 +147,16 @@ async function removeToyMsg(toyId, msgId) {
 }
 
 async function getLabels() {
-	const collection = await dbService.getCollection('toy')
-	const toys = await collection.find({}).toArray()
-
-	const labels = toys.flatMap(toy => toy.labels || [])
-	return [...new Set(labels)]
+	try {
+		const collection = await dbService.getCollection('label')
+		const labelsData = await collection.find({}).toArray()
+		const labels = labelsData.map(label => label.name)
+		// console.log('Labels from collection - (file toy service) - backend: ', labels);
+		return labels
+	} catch (err) {
+		logger.error('cannot get labels from backend - toy.service', err)
+		throw err
+	}
+	// return ['On Wheels', 'Box Game', 'Art', 'Baby', 'Doll', 'Puzzle', 'Outdoor', 'Battery Powered']
 }
 

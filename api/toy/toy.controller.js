@@ -2,8 +2,9 @@ import { toyService } from './toy.service.js'
 import { logger } from '../../services/logger.service.js'
 
 export async function getToys(req, res) {
-    let labels = req.query.labels
-    if (typeof labels === 'string') {
+    let { labels } = req.query
+
+    if (labels && typeof labels === 'string') {
         labels = [labels]
     }
     const filterBy = {
@@ -19,7 +20,7 @@ export async function getToys(req, res) {
         const toyData = await toyService.query(filterBy)
         console.log('filter by: ', filterBy);
         console.log('toy data: ', toyData);
-        
+
         res.json(toyData)
     } catch (err) {
         logger.error('Cannot get toys', err)
