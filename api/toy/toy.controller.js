@@ -1,5 +1,6 @@
 import { toyService } from './toy.service.js'
 import { logger } from '../../services/logger.service.js'
+import { log } from 'console'
 
 export async function getToys(req, res) {
     let { labels } = req.query
@@ -74,12 +75,15 @@ export async function removeToy(req, res) {
 }
 
 export async function addToyMsg(req, res) {
-    const { loggedinUser } = req
+    const { loggedinUser } = req    
     try {
         const toyId = req.params.id
         const msg = {
             txt: req.body.txt,
-            by: loggedinUser,
+            by: {
+                _id: loggedinUser._id,
+                fullname: loggedinUser.fullname
+            }, 
             createdAt: Date.now(),
         }
         const savedMsg = await toyService.addToyMsg(toyId, msg)
