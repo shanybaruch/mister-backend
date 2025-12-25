@@ -44,7 +44,7 @@ async function query(filterBy = { txt: '' }) {
 			sort[filterBy.sortBy] = direction
 		}
 		const pageIdx = +filterBy.pageIdx || 0
-		const PAGE_SIZE = 6
+		const PAGE_SIZE = 8
 
 		var toys = await collection.find(criteria)
 			.sort(sort)
@@ -125,9 +125,10 @@ async function update(toy) {
 async function addToyMsg(toyId, msg) {
 	try {
 		msg.id = utilService.makeId()
-
 		const collection = await dbService.getCollection('toy')
-		await collection.updateOne({ _id: ObjectId.createFromHexString(toyId) }, { $push: { msgs: msg } })
+		await collection.updateOne(
+			{ _id: ObjectId.createFromHexString(toyId) },
+			{ $push: { msgs: msg } })
 		return msg
 	} catch (err) {
 		logger.error(`cannot add toy msg ${toyId}`, err)
