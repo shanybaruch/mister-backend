@@ -1,4 +1,4 @@
 export default {
-    dbURL: 'mongodb://127.0.0.1:27017',
+    dbURL: 'mongodb+srv://shany_db_user:1234567899@cluster0.qu22w6a.mongodb.net/',
     dbName: 'tester_db',
 }
