@@ -1,9 +1,9 @@
 import { toyService } from './toy.service.js'
 import { logger } from '../../services/logger.service.js'
-import { log } from 'console'
 
 export async function getToys(req, res) {
-    let { labels } = req.query
+    // let { labels } = req.query
+    let labels = req.query.labels || req.query['labels[]']
 
     if (labels && typeof labels === 'string') {
         labels = [labels]
@@ -19,9 +19,8 @@ export async function getToys(req, res) {
     }
     try {
         const toyData = await toyService.query(filterBy)
-        console.log('filter by: ', filterBy);
-        console.log('toy data: ', toyData);
-
+        console.log('------filter by: ', filterBy);
+        // console.log('toy data: ', toyData);        
         res.json(toyData)
     } catch (err) {
         logger.error('Cannot get toys', err)
@@ -75,7 +74,7 @@ export async function removeToy(req, res) {
 }
 
 export async function addToyMsg(req, res) {
-    const { loggedinUser } = req    
+    const { loggedinUser } = req
     try {
         const toyId = req.params.id
         const msg = {
@@ -83,7 +82,7 @@ export async function addToyMsg(req, res) {
             by: {
                 _id: loggedinUser._id,
                 fullname: loggedinUser.fullname
-            }, 
+            },
             createdAt: Date.now(),
         }
         const savedMsg = await toyService.addToyMsg(toyId, msg)
