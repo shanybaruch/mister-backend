@@ -1,9 +1,7 @@
 import { ObjectId } from 'mongodb'
-
 import { dbService } from '../../services/db.service.js'
 import { logger } from '../../services/logger.service.js'
 import { utilService } from '../../services/util.service.js'
-import { log } from 'console'
 
 export const toyService = {
 	remove,
@@ -53,7 +51,8 @@ async function query(filterBy = { txt: '' }) {
 			.toArray()
 
 		const maxPage = Math.ceil(totalCount / PAGE_SIZE)
-
+		console.log(`--- DEBUG: PageIdx: ${pageIdx}, PageSize: ${PAGE_SIZE} ---`)
+		console.log(`--- Returning ${toys.length} toys to the frontend ---`)
 		console.log('toys: ', toys)
 		return { toys, maxPage, totalCount, labels }
 	} catch (err) {
