@@ -45,7 +45,7 @@ async function query(filterBy = {}) {
                 }
             }
         ]).toArray()
-        console.log('------Reviews from DB:', reviews)
+        // console.log('------Reviews from DB:', reviews)
         return reviews
     } catch (err) {
         logger.error('cannot get reviews', err)
