@@ -16,12 +16,12 @@ export async function getReviews(req, res) {
 
 export async function deleteReview(req, res) {
 	var { loggedinUser } = req
-    const { id: reviewId } = req.params
-    
+	const { id: reviewId } = req.params
+
 	try {
 		const deletedCount = await reviewService.remove(reviewId)
 		if (deletedCount === 1) {
-            socketService.broadcast({ type: 'review-removed', data: reviewId, userId: loggedinUser._id })
+			socketService.broadcast({ type: 'review-removed', data: reviewId, userId: loggedinUser._id })
 			res.send({ msg: 'Deleted successfully' })
 		} else {
 			res.status(400).send({ err: 'Cannot remove review' })
@@ -37,12 +37,12 @@ export async function addReview(req, res) {
 
 	try {
 		var review = req.body
-		const { aboutUserId } = review
-		review.byUserId = loggedinUser._id
+		const { toyId } = review
+		review.userId = loggedinUser._id
 		review = await reviewService.add(review)
 
 		// Give the user credit for adding a review
-		// var user = await userService.getById(review.byUserId)
+		// var user = await userService.getById(review.userId)
 		// user.score += 10
 
 		loggedinUser.score += 10
@@ -54,16 +54,17 @@ export async function addReview(req, res) {
 		res.cookie('loginToken', loginToken)
 
 		// prepare the updated review for sending out
+		const toy = await toyService.getById(toyId)
 
-		review.byUser = loggedinUser
-		review.aboutUser = await userService.getById(aboutUserId)
+		review.user = loggedinUser
+		review.toy = { _id: toy._id, name: toy.name, price: toy.price }
 
-		delete review.aboutUser.givenReviews
-		delete review.aboutUserId
-		delete review.byUserId
+		delete review.toy.givenReviews
+		delete review.toyId
+		delete review.userId
 
 		socketService.broadcast({ type: 'review-added', data: review, userId: loggedinUser._id })
-		socketService.emitToUser({ type: 'review-about-you', data: review, userId: review.aboutUser._id })
+		// socketService.emitToUser({ type: 'review-about-you', data: review, userId: review.toy._id })
 
 		const fullUser = await userService.getById(loggedinUser._id)
 		socketService.emitTo({ type: 'user-updated', data: fullUser, label: fullUser._id })
