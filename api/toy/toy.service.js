@@ -30,7 +30,6 @@ async function query(filterBy = { txt: '' }) {
 		if (filterBy.labels && filterBy.labels.length > 0) {
 			criteria.labels = { $in: filterBy.labels }
 		}
-
 		const collection = await dbService.getCollection('toy')
 
 		const labels = await getLabels()
@@ -51,8 +50,6 @@ async function query(filterBy = { txt: '' }) {
 			.toArray()
 
 		const maxPage = Math.ceil(totalCount / PAGE_SIZE)
-		console.log(`--- DEBUG: PageIdx: ${pageIdx}, PageSize: ${PAGE_SIZE} ---`)
-		console.log(`--- Returning ${toys.length} toys to the frontend ---`)
 		console.log('toys: ', toys)
 		return { toys, maxPage, totalCount, labels }
 	} catch (err) {
