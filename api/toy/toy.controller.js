@@ -95,7 +95,7 @@ export async function addToyMsg(req, res) {
 
 export async function removeToyMsg(req, res) {
     try {
-        const { toyId, msgId } = req.params
+        const { id: toyId, msgId } = req.params
 
         const removedId = await toyService.removeToyMsg(toyId, msgId)
         res.send(removedId)
