@@ -22,10 +22,14 @@ export async function deleteReview(req, res) {
 
 	try {
 		const review = await reviewService.getById(reviewId)
-        if (!loggedinUser.isAdmin && review.userId !== loggedinUser._id) {
-            return res.status(403).send({ err: 'Not authorized to delete this review' })
-        }
-		
+		if (!review) return res.status(404).send({ err: 'Review not found' })
+
+		const reviewOwnerId = review.userId.toString()
+		const loggedInId = loggedinUser._id.toString()
+		if (!loggedinUser.isAdmin && reviewOwnerId !== loggedInId) {
+			return res.status(403).send({ err: 'Not authorized to delete this review' })
+		}
+
 		const deletedCount = await reviewService.remove(reviewId)
 		if (deletedCount === 1) {
 			socketService.broadcast({ type: 'review-removed', data: reviewId, userId: loggedinUser._id })

@@ -3,7 +3,12 @@ import { asyncLocalStorage } from '../../services/als.service.js'
 import { logger } from '../../services/logger.service.js'
 import { dbService } from '../../services/db.service.js'
 
-export const reviewService = { query, remove, add }
+export const reviewService = { 
+    query, 
+    remove, 
+    add, 
+    getById
+}
 
 async function query(filterBy = {}) {
     try {
@@ -79,6 +84,7 @@ async function add(review) {
             userId: ObjectId.createFromHexString(review.userId),
             toyId: ObjectId.createFromHexString(review.toyId),
             txt: review.txt,
+            createdAt: Date.now()
         }
         const collection = await dbService.getCollection('review')
         await collection.insertOne(reviewToAdd)
@@ -95,4 +101,15 @@ function _buildCriteria(filterBy) {
     if (filterBy.userId) criteria.userId = ObjectId.createFromHexString(filterBy.userId)
     if (filterBy.toyId) criteria.toyId = ObjectId.createFromHexString(filterBy.toyId)
     return criteria
+}
+
+async function getById(reviewId) {
+    try {
+        const collection = await dbService.getCollection('review')
+        const review = await collection.findOne({ _id: ObjectId.createFromHexString(reviewId) })
+        return review
+    } catch (err) {
+        logger.error(`cannot get review ${reviewId}`, err)
+        throw err
+    }
 }
