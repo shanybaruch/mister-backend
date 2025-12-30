@@ -53,21 +53,18 @@ export async function addReview(req, res) {
 		review = await reviewService.add(review)
 
 		// Give the user credit for adding a review
-		// var user = await userService.getById(review.userId)
-		// user.score += 10
+		var user = await userService.getById(loggedinUser._id)
+		user.score += 10
 
-		loggedinUser.score += 10
-		await userService.update(loggedinUser)
+		
+		await userService.update(user)
 
-		// Update user score in login token as well
-
-		const loginToken = authService.getLoginToken(loggedinUser)
-		res.cookie('loginToken', loginToken)
+		
 
 		// prepare the updated review for sending out
 		const toy = await toyService.getById(toyId)
 
-		review.user = loggedinUser
+		review.user = user
 		review.toy = { _id: toy._id, name: toy.name, price: toy.price }
 
 		delete review.toy.givenReviews
@@ -78,6 +75,8 @@ export async function addReview(req, res) {
 		// socketService.emitToUser({ type: 'review-about-you', data: review, userId: review.toy._id })
 
 		const fullUser = await userService.getById(loggedinUser._id)
+		console.log('got here',{fullUser});
+		
 		socketService.emitTo({ type: 'user-updated', data: fullUser, label: fullUser._id })
 
 		res.send(review)
