@@ -14,7 +14,6 @@ export const userService = {
 
 async function query(filterBy = {}) {
 	const criteria = _buildCriteria(filterBy)
-    
 	try {
 		const collection = await dbService.getCollection('user')
 		var users = await collection.find(criteria).sort({ nickname: -1 }).toArray()
@@ -42,6 +41,7 @@ async function getById(userId) {
 		throw err
 	}
 }
+
 async function getByUsername(username) {
 	try {
 		const collection = await dbService.getCollection('user')
@@ -64,7 +64,6 @@ async function remove(userId) {
 }
 
 async function update(user) {
-	
 	try {
 		// peek only updatable fields!
 		const userToSave = {

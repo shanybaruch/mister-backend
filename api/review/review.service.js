@@ -63,7 +63,6 @@ async function remove(reviewId) {
     try {
         const { loggedinUser } = asyncLocalStorage.getStore()
         const collection = await dbService.getCollection('review')
-
         const criteria = { _id: ObjectId.createFromHexString(reviewId) }
 
         // remove only if user is owner/admin
@@ -89,7 +88,6 @@ async function add(review) {
         }
         const collection = await dbService.getCollection('review')
         await collection.insertOne(reviewToAdd)
-
         return reviewToAdd
     } catch (err) {
         logger.error('cannot add review', err)

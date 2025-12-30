@@ -56,10 +56,7 @@ export async function addReview(req, res) {
 		var user = await userService.getById(loggedinUser._id)
 		user.score += 10
 
-		
 		await userService.update(user)
-
-		
 
 		// prepare the updated review for sending out
 		const toy = await toyService.getById(toyId)
@@ -75,7 +72,6 @@ export async function addReview(req, res) {
 		// socketService.emitToUser({ type: 'review-about-you', data: review, userId: review.toy._id })
 
 		const fullUser = await userService.getById(loggedinUser._id)
-		console.log('got here',{fullUser});
 		
 		socketService.emitTo({ type: 'user-updated', data: fullUser, label: fullUser._id })
 
