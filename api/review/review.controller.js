@@ -7,8 +7,10 @@ import { toyService } from '../toy/toy.service.js'
 
 
 export async function getReviews(req, res) {
+	
 	try {
 		const reviews = await reviewService.query(req.query)
+		console.log('---reviews in controller: ',reviews);
 		res.send(reviews)
 	} catch (err) {
 		logger.error('Cannot get reviews', err)

@@ -19,7 +19,7 @@ export async function getToys(req, res) {
     }
     try {
         const toyData = await toyService.query(filterBy)
-        console.log('------filter by: ', filterBy);
+        // console.log('------filter by: ', filterBy);
         // console.log('toy data: ', toyData);        
         res.json(toyData)
     } catch (err) {

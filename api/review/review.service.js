@@ -97,6 +97,9 @@ async function add(review) {
 
 function _buildCriteria(filterBy) {
     const criteria = {}
+    if (filterBy.txt) {
+        criteria.txt = { $regex: filterBy.txt, $options: 'i' }
+    }
     if (filterBy.userId) criteria.userId = ObjectId.createFromHexString(filterBy.userId)
     if (filterBy.toyId) criteria.toyId = ObjectId.createFromHexString(filterBy.toyId)
     return criteria
