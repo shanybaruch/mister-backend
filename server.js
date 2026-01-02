@@ -68,6 +68,9 @@ app.get('/*all', (req, res) => {
 logger.info('server.js loaded...')
 const port = process.env.PORT || 3030
 
-app.listen(port, () => {
+server.listen(port, () => {
     logger.info('Server is running on port: ' + port)
 })
+// app.listen(port, () => {
+//     logger.info('Server is running on port: ' + port)
+// })
