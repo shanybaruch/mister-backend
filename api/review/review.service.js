@@ -13,7 +13,7 @@ export const reviewService = {
 async function query(filterBy = {}) {
     try {
         const criteria = _buildCriteria(filterBy)
-        console.log(criteria)
+        // console.log(criteria)
         const collection = await dbService.getCollection('review')
         // var reviews = await collection.find().toArray()
         var reviews = await collection.aggregate([

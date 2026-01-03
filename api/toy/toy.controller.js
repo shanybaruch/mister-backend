@@ -111,16 +111,18 @@ export async function getToyLabels(req, res) {
 }
 
 export async function addGalleryImg(req, res) {
-    const { loggedInUser } = req
+    const { loggedinUser } = req
+    // console.log('loggedinUser: ',loggedinUser);
+    if (!loggedinUser) return res.status(401).send('Not Logged In')
     try {
         const toyId = req.params.id
         const { imgUrl } = req.body
 
-        const savedImg = await toyService.addToyImg(toyId, imgUrl, loggedInUser)    
+        const savedImg = await toyService.addToyImg(toyId, imgUrl, loggedinUser?._id)    
         res.json(savedImg)
     } catch (err) {
         logger.error('Failed to add toy img', err)
-        res.status(500).send({ err: 'Failed to add toy img' })
+        res.status(500).send({ err: 'Failed to add toy img (toy.controller-backend)' })
     }
 }
 

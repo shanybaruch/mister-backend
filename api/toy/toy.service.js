@@ -52,7 +52,7 @@ async function query(filterBy = { txt: '' }) {
 			.toArray()
 
 		const maxPage = Math.ceil(totalCount / PAGE_SIZE)
-		console.log('toys: ', toys)
+		// console.log('toys: ', toys)
 		return { toys, maxPage, totalCount, labels }
 	} catch (err) {
 		logger.error('cannot find toys', err)
@@ -87,7 +87,7 @@ async function add(toy) {
 	try {
 		toy.createdAt = Date.now()
 		toy.inStock = true
-		console.log('labels- in backend: ', toy.labels);
+		// console.log('labels- in backend: ', toy.labels);
 
 		if (!toy.labels) toy.labels = []
 		const uniqueStr = toy.name || toy._id || 'default-toy'
@@ -159,12 +159,12 @@ async function getLabels() {
 	// return ['On Wheels', 'Box Game', 'Art', 'Baby', 'Doll', 'Puzzle', 'Outdoor', 'Battery Powered']
 }
 
-async function addToyImg(toyId, imgUrl, user) {
+async function addToyImg(toyId, imgUrl, userId) {
 	try {
 		const imgObj = {
 			id: utilService.makeId(),
 			url: imgUrl,
-			by: (user && user._id) ? user._id : 'unknown'
+			by: userId
 		}
 		const collection = await dbService.getCollection('toy')
 		await collection.updateOne(
