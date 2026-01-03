@@ -11,7 +11,9 @@ export const toyService = {
 	update,
 	addToyMsg,
 	removeToyMsg,
-	getLabels
+	getLabels,
+	addToyImg,
+	removeToyImg,
 }
 
 async function query(filterBy = { txt: '' }) {
@@ -157,3 +159,36 @@ async function getLabels() {
 	// return ['On Wheels', 'Box Game', 'Art', 'Baby', 'Doll', 'Puzzle', 'Outdoor', 'Battery Powered']
 }
 
+async function addToyImg(toyId, imgUrl, user) {
+	try {
+		const imgObj = {
+			id: utilService.makeId(),
+			url: imgUrl,
+			by: (user && user._id) ? user._id : 'unknown'
+		}
+		const collection = await dbService.getCollection('toy')
+		await collection.updateOne(
+			{ _id: ObjectId.createFromHexString(toyId) },
+			{ $push: { gallery: imgObj } }
+		)
+		return imgObj
+	} catch (err) {
+		logger.error(`cannot add toy img ${toyId}`, err)
+		throw err
+	}
+}
+
+async function removeToyImg(toyId, imgId, user) {
+	try {
+		const collection = await dbService.getCollection('toy')
+
+		await collection.updateOne(
+			{ _id: ObjectId.createFromHexString(toyId) },
+			{ $pull: { gallery: { id: imgId } } }
+		)
+		return imgId
+	} catch (err) {
+		logger.error(`cannot remove toy img ${toyId}`, err)
+		throw err
+	}
+}

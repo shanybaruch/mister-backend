@@ -109,3 +109,29 @@ export async function getToyLabels(req, res) {
     const labels = await toyService.getLabels()
     res.json(labels)
 }
+
+export async function addGalleryImg(req, res) {
+    const { loggedInUser } = req
+    try {
+        const toyId = req.params.id
+        const { imgUrl } = req.body
+
+        const savedImg = await toyService.addToyImg(toyId, imgUrl, loggedInUser)    
+        res.json(savedImg)
+    } catch (err) {
+        logger.error('Failed to add toy img', err)
+        res.status(500).send({ err: 'Failed to add toy img' })
+    }
+}
+
+export async function removeGalleryImg(req, res) {
+  const { loggedInUser } = req
+  try {
+    const { id, imgId } = req.params
+    const removedId = await toyService.removeToyImg(id, imgId, loggedInUser)
+    res.send(removedId)
+  } catch (err) {
+    logger.error('Failed to remove toy img', err)
+    res.status(500).send({ err: 'Failed to remove toy img' })
+  }
+}
